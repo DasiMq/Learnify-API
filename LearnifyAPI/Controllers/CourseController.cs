@@ -1,5 +1,6 @@
 ﻿using LearnifyAPI.Dtos;
 using LearnifyAPI.Models;
+using LearnifyAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -11,26 +12,28 @@ namespace LearnifyAPI.Controllers
     [Route("api/[controller]")]
     public class CourseController : Controller
     {
-        private readonly LearnifyContext dbContext;
 
-        public CourseController(LearnifyContext dbContext)
+        private readonly ICourseService courseService;
+
+        public CourseController(ICourseService courseService)
         {
-            this.dbContext = dbContext;
+            this.courseService = courseService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCourses()
+        public async Task<IActionResult> getCourses()
         {
-            return Ok(await dbContext.Courses.ToListAsync());
+            return Ok(await courseService.getCourses());
         }
 
-        [HttpGet]
-        [Route("{CourseId:int}")]
-        public async Task<IActionResult> GetCourse([FromRoute] int CourseId)
-        {
-            var course = await dbContext.Courses.FindAsync(CourseId);
 
-            if(course == null)
+        [HttpGet]
+        [Route("{courseId:int}")]
+        public async Task<IActionResult> GetCourse([FromRoute] int courseId)
+        {
+            var course = await courseService.getCourseId(courseId);
+
+            if (course == null)
             {
                 return NotFound();
             }
@@ -39,61 +42,36 @@ namespace LearnifyAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCourse(AddCourse addCourse)
+        public async Task<IActionResult> addCourse(AddCourse addCourse)
         {
-            
-            Guid guid = Guid.NewGuid();
-            var course = new Course()
-            {
-                CourseId = guid.GetHashCode(),
-                CourseName = addCourse.CourseName,
-                CourseDescription = addCourse.CourseDescription,
-                CourseDuration = addCourse.CourseDuration,
-                CoursePrice = addCourse.CoursePrice,
+            return Ok(await courseService.addCourse(addCourse));
+        }
 
-        };
-            course.CourseUserId = 2;
-            await dbContext.Courses.AddAsync(course);
-            await dbContext.SaveChangesAsync();
+        [HttpPut("{courseId:int}")]
+        public async Task<IActionResult> updateCourse([FromRoute] int courseId, UpdateCourse updateCourse)
+        {
+            var course = await courseService.updateCourse(courseId,updateCourse);
+
+            if (course == null)
+            {
+                return NotFound();
+            }
 
             return Ok(course);
         }
 
-        [HttpPut]
-        [Route("{CourseId:int}")]
-        public async Task<IActionResult> UpdateCourse([FromRoute] int CourseId, UpdateCourse updateCourse)
-        {
-            var course = await dbContext.Courses.FindAsync(CourseId);
-            
-            if (course != null)
-            {
-                course.CourseName = updateCourse.CourseName;
-                course.CourseDescription = updateCourse.CourseDescription;  
-                course.CourseDuration = updateCourse.CourseDuration;
-                course.CoursePrice = updateCourse.CoursePrice;
-
-                await dbContext.SaveChangesAsync();
-
-                return Ok(course);
-            }
-
-            return NotFound();
-        }
-
         [HttpDelete]
-        [Route("{CourseId:int}")]
-        public async Task<IActionResult> DeleteCourse([FromRoute] int CourseId)
+        [Route("{courseId:int}")]
+        public async Task<IActionResult> DeleteCourse([FromRoute] int courseId)
         {
-            var course = await dbContext.Courses.FindAsync(CourseId);
+            var course = await courseService.deleteCourse(courseId);
 
-            if (course != null)
+            if (course == null)
             {
-                dbContext.Remove(course);
-                await dbContext.SaveChangesAsync();
-                return Ok(course);
+                return NotFound();
             }
 
-            return NotFound();
+            return Ok(course);
         }
-    } 
+    }
 }
