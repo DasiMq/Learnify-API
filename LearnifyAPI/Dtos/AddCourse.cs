@@ -5,6 +5,8 @@ namespace LearnifyAPI.Dtos
     public class AddCourse
     {
         [Required]
+        public int CourseId { get; set; }
+        [Required]
         public string CourseName { get; set; } = null!;
         [Required]
         public string CourseDescription { get; set; } = null!;
