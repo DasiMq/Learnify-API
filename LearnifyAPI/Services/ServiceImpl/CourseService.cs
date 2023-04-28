@@ -15,7 +15,7 @@ namespace LearnifyAPI.Services.ServiceImpl
         }
 
         public async Task<List<Course>> getCourses()
-        {
+        { 
             return await dbContext.Courses.ToListAsync();
         }
 
@@ -35,7 +35,7 @@ namespace LearnifyAPI.Services.ServiceImpl
                 CourseDuration = addCourse.CourseDuration,
                 CoursePrice = addCourse.CoursePrice,
             };
-            course.CourseUserId = 2;
+            course.CourseUserId = 4;
             await dbContext.Courses.AddAsync(course);
             await dbContext.SaveChangesAsync();
             

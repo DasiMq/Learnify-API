@@ -13,17 +13,17 @@ namespace LearnifyAPI.Controllers
     public class CourseController : Controller
     {
 
-        private readonly ICourseService courseService;
+        private readonly ICourseService _courseService;
 
         public CourseController(ICourseService courseService)
         {
-            this.courseService = courseService;
+            this._courseService = courseService;
         }
 
         [HttpGet]
         public async Task<IActionResult> getCourses()
         {
-            return Ok(await courseService.getCourses());
+            return Ok(await _courseService.getCourses());
         }
 
 
@@ -31,7 +31,7 @@ namespace LearnifyAPI.Controllers
         [Route("{courseId:int}")]
         public async Task<IActionResult> GetCourse([FromRoute] int courseId)
         {
-            var course = await courseService.getCourseId(courseId);
+            var course = await _courseService.getCourseId(courseId);
 
             if (course == null)
             {
@@ -44,13 +44,13 @@ namespace LearnifyAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> addCourse(AddCourse addCourse)
         {
-            return Ok(await courseService.addCourse(addCourse));
+            return Ok(await _courseService.addCourse(addCourse));
         }
 
         [HttpPut("{courseId:int}")]
         public async Task<IActionResult> updateCourse([FromRoute] int courseId, UpdateCourse updateCourse)
         {
-            var course = await courseService.updateCourse(courseId,updateCourse);
+            var course = await _courseService.updateCourse(courseId,updateCourse);
 
             if (course == null)
             {
@@ -64,7 +64,7 @@ namespace LearnifyAPI.Controllers
         [Route("{courseId:int}")]
         public async Task<IActionResult> DeleteCourse([FromRoute] int courseId)
         {
-            var course = await courseService.deleteCourse(courseId);
+            var course = await _courseService.deleteCourse(courseId);
 
             if (course == null)
             {
