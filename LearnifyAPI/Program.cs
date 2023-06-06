@@ -15,6 +15,15 @@ builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddDbContext<LearnifyContext>();
 
+// Services CORS
+builder.Services.AddCors(p => p.AddPolicy("CorsApp", builder =>
+{
+    builder
+    .WithOrigins("*")
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+}));
+
 
 var app = builder.Build();
 
@@ -27,7 +36,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+app.UseCors("CorsApp");
 
 app.UseAuthorization();
 
